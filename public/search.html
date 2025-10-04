@@ -21,13 +21,15 @@
   <main>
     <h2>Search Events</h2>
 
-    <!-- Filter Form -->
+   
     <form id="searchForm">
       <label>Date:</label>
       <input type="date" id="date"><br><br>
 
-      <label>Location:</label>
-      <input type="text" id="venue" placeholder="Enter venue"><br><br>
+      <label>Venue:</label>
+      <select id="venue">
+        <option value="">-- Any --</option>
+      </select><br><br>
 
       <label>Category:</label>
       <select id="category">
@@ -51,8 +53,9 @@
     const resultsDiv = document.getElementById("results");
     const messageDiv = document.getElementById("message");
     const categorySelect = document.getElementById("category");
+    const venueSelect = document.getElementById("venue");
 
-
+    // Load event categories
     async function loadCategories() {
       try {
         const res = await fetch("http://localhost:3060/api/events/categories/list");
@@ -68,24 +71,42 @@
       }
     }
 
-    loadCategories();
+  
+    async function loadVenues() {
+      try {
+        const res = await fetch("http://localhost:3060/api/events");
+        const events = await res.json();
+        const venues = [...new Set(events.map(e => e.VenueName))];
+        venues.forEach(v => {
+          const option = document.createElement("option");
+          option.value = v;
+          option.textContent = v;
+          venueSelect.appendChild(option);
+        });
+      } catch (err) {
+        console.error("Failed to load venues", err);
+      }
+    }
 
-    // Handle search form submit
+    loadCategories();
+    loadVenues();
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       resultsDiv.innerHTML = "";
       messageDiv.innerHTML = "";
 
       const date = document.getElementById("date").value;
-      const venue = document.getElementById("venue").value.trim();
+      const venue = document.getElementById("venue").value;
       const category = document.getElementById("category").value;
 
       const params = new URLSearchParams();
       if (date) params.append("date", date);
-      if (veue) params.append("venue", venue);
+      if (venue) params.append("venue", venue);
       if (category) params.append("type", category);
 
       try {
+        // Updated API to use venue in search query
         const res = await fetch(`http://localhost:3060/api/events/search?${params.toString()}`);
         const events = await res.json();
 
@@ -94,13 +115,11 @@
           return;
         }
 
-       
         resultsDiv.innerHTML = events.map(event => `
           <div class="event-card">
-            <h3>${event.EventName}</h3>
+            <h3>${event.EventName} - ${event.VenueName}</h3>
             <p><strong>Category:</strong> ${event.EventType || "General"}</p>
             <p><strong>Date:</strong> ${event.EventDate}</p>
-            <p><strong>Location:</strong> ${event.VenueName}</p>
             <a href="eventdetails.html?id=${event.EventID}">View Details</a>
           </div>
         `).join("");
@@ -111,14 +130,15 @@
       }
     });
 
-    // Clear filters
+    
     function clearFilters() {
       document.getElementById("date").value = "";
-      document.getElementById("city").value = "";
-      document.getElementById("category").value = "";
+      venueSelect.value = "";
+      categorySelect.value = "";
       resultsDiv.innerHTML = "";
       messageDiv.textContent = "Filters cleared.";
     }
   </script>
 </body>
 </html>
+

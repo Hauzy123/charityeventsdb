@@ -17,27 +17,27 @@ router.get("/", (req, res) => {
 });
 
 router.get("/search", (req, res) => {
-  const { date, city, type } = req.query;
-  let query = "SELECT * FROM CharityEvents WHERE 1=1";
-  const params = [];
+    const { date, venue, type } = req.query;  
+    let query = "SELECT * FROM CharityEvents WHERE 1=1";
+    const params = [];
 
-  if (date) {
-    query += " AND EventDate = ?";
-    params.push(date);
-  }
-  if (city) {
-    query += " AND City LIKE ?";
-    params.push(`%${city}%`);
-  }
-  if (type) {
-    query += " AND EventType = ?";
-    params.push(type);
-  }
+    if (date) {
+        query += " AND EventDate = ?";
+        params.push(date);
+    }
+    if (venue) {
+        query += " AND VenueName = ?"; 
+        params.push(venue);
+    }
+    if (type) {
+        query += " AND EventType = ?";
+        params.push(type);
+    }
 
-  connection.query(query, params, (err, results) => {
-    if (err) return res.status(500).json({ error: "Search failed." });
-    res.json(results);
-  });
+    connection.query(query, params, (err, results) => {
+        if (err) return res.status(500).json({ error: "Search failed." });
+        res.json(results);
+    });
 });
 
 router.get("/:id", (req, res) => {
