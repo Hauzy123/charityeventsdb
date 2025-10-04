@@ -18,7 +18,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/search", (req, res) => {
-    const { date, venue, type } = req.query;  
+    const { date, venue, type } = req.query;
     let query = "SELECT * FROM CharityEvents WHERE 1=1";
     const params = [];
 
@@ -27,7 +27,7 @@ router.get("/search", (req, res) => {
         params.push(date);
     }
     if (venue) {
-        query += " AND VenueName = ?"; 
+        query += " AND VenueName = ?";
         params.push(venue);
     }
     if (type) {

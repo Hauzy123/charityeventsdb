@@ -55,7 +55,7 @@
     const categorySelect = document.getElementById("category");
     const venueSelect = document.getElementById("venue");
 
-    // Load event categories
+    
     async function loadCategories() {
       try {
         const res = await fetch("http://localhost:3060/api/events/categories/list");
@@ -106,7 +106,7 @@
       if (category) params.append("type", category);
 
       try {
-        // Updated API to use venue in search query
+       
         const res = await fetch(`http://localhost:3060/api/events/search?${params.toString()}`);
         const events = await res.json();
 
