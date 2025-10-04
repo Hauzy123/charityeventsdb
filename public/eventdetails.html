@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Event Details - POM City Charity Events</title>
-  <link rel="stylesheet" href="./styles/style.css">
-  
+  <title>Event Details</title>
+    <link rel="stylesheet" href="./styles/style.css">
 </head>
 <body>
   <header>
@@ -21,10 +20,7 @@
 
   <main>
     <h2>Event Details</h2>
-  
-    <div id="events-container">
-      <p>Loading event details...</p>
-    </div>
+    <div id="event-details">Loading...</div>
   </main>
 
   <footer>
@@ -32,47 +28,48 @@
   </footer>
 
   <script>
-    
-    async function loadEvents() {
+    function getEventId() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("id");
+    }
+
+    async function loadEvent() {
+      const id = getEventId();
+      const container = document.getElementById("event-details");
+
+      if (!id) {
+        container.innerHTML = "<p>No event selected.</p>";
+        return;
+      }
+
       try {
-        const response = await fetch("http://localhost:3060/api/events");
-        if (!response.ok) throw new Error("Failed to fetch events");
-        const events = await response.json();
+        const res = await fetch(`http://localhost:3060/api/events/${id}`);
+        const event = await res.json();
 
-        const container = document.getElementById("events-container");
-        container.innerHTML = "";
-
-        if (events.length === 0) {
-          container.innerHTML = "<p>No events found.</p>";
+        if (!event || event.error) {
+          container.innerHTML = "<p>Event not found.</p>";
           return;
         }
 
-       
-        events.forEach(event => {
-          const eventDiv = document.createElement("div");
-          eventDiv.classList.add("event-card");
-          eventDiv.innerHTML = `
-            <h3>${event.EventName}</h3>
-            <p><strong>Type:</strong> ${event.EventType || "N/A"}</p>
-            <p><strong>Date:</strong> ${event.EventDate}</p>
-            <p><strong>Time:</strong> ${event.StartTime} - ${event.EndTime}</p>
-            <p><strong>Venue:</strong> ${event.VenueName}, ${event.Address}</p>
-            <p><strong>Organizer:</strong> ${event.OrganizerName}</p>
-            <p><strong>Contact:</strong> ${event.ContactEmail}</p>
-            <p><strong>Price:</strong> ${event.TicketPrice == 0 ? "Free" : "K" + event.TicketPrice}</p>
-          `;
-          container.appendChild(eventDiv);
-        });
-
-      } catch (error) {
-        console.error("Error fetching events:", error);
-        document.getElementById("events-container").innerHTML =
-          "<p style='color:red;'>Failed to load events. Please try again later.</p>";
+        container.innerHTML = `
+          <h3>${event.EventName}</h3>
+          <p><strong>Category:</strong> ${event.EventType || "General"}</p>
+          <p><strong>Location:</strong> ${event.VenueName}, ${event.City}</p>
+          <p><strong>Date:</strong> ${event.EventDate}</p>
+          <p><strong>Description:</strong> ${event.Description || "No description available."}</p>
+          <button onclick="register()">Register</button>
+        `;
+      } catch (err) {
+        container.innerHTML = "<p>Error loading event details.</p>";
+        console.error(err);
       }
     }
 
-  
-    window.onload = loadEvents;
+    function register() {
+      alert("This feature is currently under construction.");
+    }
+
+    window.onload = loadEvent;
   </script>
-  </body>
+</body>
 </html>
