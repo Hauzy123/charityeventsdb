@@ -8,6 +8,7 @@ connection.connect(err => {
   else console.log("Connected to database.");
 });
 
+
 router.get("/", (req, res) => {
   const query = "SELECT * FROM CharityEvents WHERE EventDate >= CURDATE() ORDER BY EventDate ASC";
   connection.query(query, (err, results) => {
