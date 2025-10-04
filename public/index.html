@@ -46,7 +46,7 @@
         container.innerHTML = events.map(event => `
           <div>
             <h4>${event.EventName}</h4>
-            <p>${event.EventType || "General"} - ${event.City}</p>
+            <p>${event.EventType || "General"} - ${event.VenueName}</p>
             <p>${event.EventDate}</p>
             <a href="eventdetails.html?id=${event.EventID}">View Details</a>
           </div>

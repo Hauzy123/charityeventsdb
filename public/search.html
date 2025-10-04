@@ -13,21 +13,112 @@
       <a href="index.html">Home</a>
       <a href="search.html">Search</a>
       <a href="register.html">Register</a>
-      <a href="event-details.html">Event Details</a>
+      <a href="eventdetails.html">Event Details</a>
       <a href="about.html">About Us</a>
     </nav>
   </header>
 
   <main>
     <h2>Search Events</h2>
-    <form>
-      <input type="text" placeholder="Enter event name">
+
+    <!-- Filter Form -->
+    <form id="searchForm">
+      <label>Date:</label>
+      <input type="date" id="date"><br><br>
+
+      <label>Location:</label>
+      <input type="text" id="venue" placeholder="Enter venue"><br><br>
+
+      <label>Category:</label>
+      <select id="category">
+        <option value="">-- Any --</option>
+      </select><br><br>
+
       <button type="submit">Search</button>
+      <button type="button" onclick="clearFilters()">Clear Filters</button>
     </form>
+
+    <div id="message"></div>
+    <div id="results"></div>
   </main>
 
   <footer>
     <p>&copy; 2025 POM City Charity Events | Jake Morea</p>
   </footer>
+
+  <script>
+    const form = document.getElementById("searchForm");
+    const resultsDiv = document.getElementById("results");
+    const messageDiv = document.getElementById("message");
+    const categorySelect = document.getElementById("category");
+
+
+    async function loadCategories() {
+      try {
+        const res = await fetch("http://localhost:3060/api/events/categories/list");
+        const categories = await res.json();
+        categories.forEach(cat => {
+          const option = document.createElement("option");
+          option.value = cat;
+          option.textContent = cat;
+          categorySelect.appendChild(option);
+        });
+      } catch (err) {
+        console.error("Failed to load categories", err);
+      }
+    }
+
+    loadCategories();
+
+    // Handle search form submit
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      resultsDiv.innerHTML = "";
+      messageDiv.innerHTML = "";
+
+      const date = document.getElementById("date").value;
+      const venue = document.getElementById("venue").value.trim();
+      const category = document.getElementById("category").value;
+
+      const params = new URLSearchParams();
+      if (date) params.append("date", date);
+      if (veue) params.append("venue", venue);
+      if (category) params.append("type", category);
+
+      try {
+        const res = await fetch(`http://localhost:3060/api/events/search?${params.toString()}`);
+        const events = await res.json();
+
+        if (!events.length) {
+          messageDiv.textContent = "No matching events found.";
+          return;
+        }
+
+       
+        resultsDiv.innerHTML = events.map(event => `
+          <div class="event-card">
+            <h3>${event.EventName}</h3>
+            <p><strong>Category:</strong> ${event.EventType || "General"}</p>
+            <p><strong>Date:</strong> ${event.EventDate}</p>
+            <p><strong>Location:</strong> ${event.VenueName}</p>
+            <a href="eventdetails.html?id=${event.EventID}">View Details</a>
+          </div>
+        `).join("");
+
+      } catch (err) {
+        messageDiv.textContent = "Error fetching events. Please try again later.";
+        console.error(err);
+      }
+    });
+
+    // Clear filters
+    function clearFilters() {
+      document.getElementById("date").value = "";
+      document.getElementById("city").value = "";
+      document.getElementById("category").value = "";
+      resultsDiv.innerHTML = "";
+      messageDiv.textContent = "Filters cleared.";
+    }
+  </script>
 </body>
 </html>
