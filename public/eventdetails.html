@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Event Details</title>
-    <link rel="stylesheet" href="./styles/style.css">
+  <link rel="stylesheet" href="./styles/style.css">
 </head>
 <body>
   <header>
@@ -21,6 +21,9 @@
   <main>
     <h2>Event Details</h2>
     <div id="event-details">Loading...</div>
+    
+    <h3>Registrations</h3>
+    <div id="registrations-list">Loading registrations...</div>
   </main>
 
   <footer>
@@ -28,11 +31,15 @@
   </footer>
 
   <script>
+    const API_URL = 'http://localhost:3060/api/events';
+
+    // Get event ID from URL query string
     function getEventId() {
       const params = new URLSearchParams(window.location.search);
       return params.get("id");
     }
 
+    // Load event details
     async function loadEvent() {
       const id = getEventId();
       const container = document.getElementById("event-details");
@@ -43,7 +50,7 @@
       }
 
       try {
-        const res = await fetch(`http://localhost:3060/api/events/${id}`);
+        const res = await fetch(`${API_URL}/${id}`);
         const event = await res.json();
 
         if (!event || event.error) {
@@ -53,20 +60,62 @@
 
         container.innerHTML = `
           <h3>${event.EventName}</h3>
-          <p><strong>Category:</strong> ${event.EventType || "General"}</p>
-          <p><strong>Location:</strong> ${event.VenueName}, ${event.City}</p>
-          <p><strong>Date:</strong> ${event.EventDate}</p>
+          <p><strong>Type:</strong> ${event.EventType || "General"}</p>
+          <p><strong>Location:</strong> ${event.VenueName}</p>
+          <p><strong>Address:</strong> ${event.Address || "N/A"}</p>
+          <p><strong>Date:</strong> ${new Date(event.EventDate).toLocaleDateString()}</p>
+          <p><strong>Time:</strong> ${event.StartTime} - ${event.EndTime || "N/A"}</p>
+          <p><strong>Organizer:</strong> ${event.OrganizerName}</p>
+          <p><strong>Contact:</strong> ${event.ContactEmail}</p>
+          <p><strong>Ticket Price:</strong> K${parseFloat(event.TicketPrice).toFixed(2)}</p>
           <p><strong>Description:</strong> ${event.Description || "No description available."}</p>
-          <button onclick="register()">Register</button>
+          <button onclick="registerForEvent(${id})">Register for this Event</button>
         `;
+
+        // Load registrations
+        loadRegistrations(id);
       } catch (err) {
         container.innerHTML = "<p>Error loading event details.</p>";
         console.error(err);
       }
     }
 
-    function register() {
-      alert("This feature is currently under construction.");
+    // Load registrations for the event
+    async function loadRegistrations(eventId) {
+      const container = document.getElementById("registrations-list");
+      
+      try {
+        const res = await fetch(`${API_URL}/${eventId}/registrations`);
+        const data = await res.json();
+
+        if (!data.success || data.registrations.length === 0) {
+          container.innerHTML = "<p>No registrations yet. Be the first to register!</p>";
+          return;
+        }
+
+        let html = `<p><strong>Total Registrations: ${data.count}</strong></p><ul>`;
+        
+        data.registrations.forEach(reg => {
+          const date = new Date(reg.RegistrationDate).toLocaleDateString();
+          html += `
+            <li>
+              <strong>${reg.FullName}</strong> (${reg.Email})<br>
+              Tickets: ${reg.TicketsPurchased} | Registered: ${date}
+            </li>
+          `;
+        });
+        
+        html += '</ul>';
+        container.innerHTML = html;
+      } catch (err) {
+        container.innerHTML = "<p>Error loading registrations.</p>";
+        console.error(err);
+      }
+    }
+
+    // Navigate to registration page with event ID
+    function registerForEvent(eventId) {
+      window.location.href = `register.html?eventId=${eventId}`;
     }
 
     window.onload = loadEvent;

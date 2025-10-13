@@ -1,13 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const dbcon = require("../models/database");
+const eventDB = require("../models/event_db");
 
 const connection = dbcon.getconnection();
 connection.connect(err => {
-  if (err) console.error("Database connection failed:", err);
-  else console.log("Connected to database.");
+  if (err) console.error(err);
 });
-
 
 router.get("/", (req, res) => {
   const query = "SELECT * FROM CharityEvents WHERE EventDate >= CURDATE() ORDER BY EventDate ASC";
@@ -18,27 +17,33 @@ router.get("/", (req, res) => {
 });
 
 router.get("/search", (req, res) => {
-    const { date, venue, type } = req.query;
-    let query = "SELECT * FROM CharityEvents WHERE 1=1";
-    const params = [];
+  const { date, venue, type } = req.query;
+  let query = "SELECT * FROM CharityEvents WHERE 1=1";
+  const params = [];
+  if (date) {
+    query += " AND EventDate = ?";
+    params.push(date);
+  }
+  if (venue) {
+    query += " AND VenueName = ?";
+    params.push(venue);
+  }
+  if (type) {
+    query += " AND EventType = ?";
+    params.push(type);
+  }
+  connection.query(query, params, (err, results) => {
+    if (err) return res.status(500).json({ error: "Search failed." });
+    res.json(results);
+  });
+});
 
-    if (date) {
-        query += " AND EventDate = ?";
-        params.push(date);
-    }
-    if (venue) {
-        query += " AND VenueName = ?";
-        params.push(venue);
-    }
-    if (type) {
-        query += " AND EventType = ?";
-        params.push(type);
-    }
-
-    connection.query(query, params, (err, results) => {
-        if (err) return res.status(500).json({ error: "Search failed." });
-        res.json(results);
-    });
+router.get("/categories/list", (req, res) => {
+  const query = "SELECT DISTINCT EventType FROM CharityEvents";
+  connection.query(query, (err, results) => {
+    if (err) return res.status(500).json({ error: "Failed to retrieve categories." });
+    res.json(results.map(r => r.EventType));
+  });
 });
 
 router.get("/:id", (req, res) => {
@@ -50,12 +55,82 @@ router.get("/:id", (req, res) => {
   });
 });
 
-router.get("/categories/list", (req, res) => {
-  const query = "SELECT DISTINCT EventType FROM CharityEvents";
-  connection.query(query, (err, results) => {
-    if (err) return res.status(500).json({ error: "Failed to retrieve categories." });
-    res.json(results.map(r => r.EventType));
-  });
+router.put("/:id", async (req, res) => {
+  try {
+    const eventId = parseInt(req.params.id);
+    const eventData = req.body;
+    if (!eventId || isNaN(eventId)) return res.status(400).json({ success: false, error: "Invalid event ID" });
+    if (Object.keys(eventData).length === 0) return res.status(400).json({ success: false, error: "No data provided for update" });
+    const result = await eventDB.updateEvent(eventId, eventData);
+    if (result.success) return res.status(200).json(result);
+    const statusCode = result.error === 'Event not found' ? 404 : 400;
+    res.status(statusCode).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  try {
+    const eventId = parseInt(req.params.id);
+    if (!eventId || isNaN(eventId)) return res.status(400).json({ success: false, error: "Invalid event ID" });
+    const result = await eventDB.deleteEvent(eventId);
+    if (result.success) return res.status(200).json(result);
+    let statusCode = 400;
+    if (result.error === 'Event not found') statusCode = 404;
+    else if (result.error.includes('existing registrations')) statusCode = 409;
+    res.status(statusCode).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
+});
+
+router.get("/:id/registrations", async (req, res) => {
+  try {
+    const eventId = parseInt(req.params.id);
+    if (!eventId || isNaN(eventId)) return res.status(400).json({ success: false, error: "Invalid event ID" });
+    const registrations = await eventDB.getEventRegistrations(eventId);
+    res.status(200).json({ success: true, count: registrations.length, registrations });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: "Failed to retrieve registrations" });
+  }
+});
+
+// POST - Register user for an event
+router.post("/:id/register", async (req, res) => {
+  try {
+    const eventId = parseInt(req.params.id);
+    if (!eventId || isNaN(eventId)) return res.status(400).json({ success: false, error: "Invalid event ID" });
+    
+    const registrationData = {
+      eventId,
+      fullName: req.body.fullName,
+      email: req.body.email,
+      phoneNumber: req.body.phoneNumber,
+      age: req.body.age,
+      gender: req.body.gender,
+      ticketsPurchased: req.body.ticketsPurchased || 1
+    };
+
+    // Basic validation
+    if (!registrationData.fullName || !registrationData.email) {
+      return res.status(400).json({ success: false, error: "Full name and email are required" });
+    }
+
+    const result = await eventDB.registerUserForEvent(registrationData);
+    
+    if (result.success) {
+      return res.status(201).json(result);
+    }
+    
+    res.status(400).json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: "Registration failed" });
+  }
 });
 
 module.exports = router;

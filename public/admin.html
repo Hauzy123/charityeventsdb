@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="./styles/style.css">
+</head>
+<body>
+  <header>
+    <h1>POM City Charity Events</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="search.html">Search</a>
+      <a href="register.html">Register</a>
+      <a href="eventdetails.html">Event Details</a>
+      <a href="about.html">About Us</a>
+      <a href="admin.html" class="active">Admin</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Admin Panel</h2>
+    <p>Manage charity events - update or delete events as needed.</p>
+
+    <h3>All Events</h3>
+    <button onclick="loadEvents()" style="background-color: #0066cc; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 10px;">Refresh Events</button>
+    <div id="events"></div>
+
+    <h3>Update Event</h3>
+    <form onsubmit="event.preventDefault(); updateEvent();">
+      <input type="number" id="updateId" placeholder="Event ID" required>
+      <input type="text" id="updateName" placeholder="New Event Name">
+      <input type="number" id="updatePrice" placeholder="New Price (K)" step="0.01">
+      <button type="submit">Update Event</button>
+    </form>
+    <div id="updateMsg" style="padding: 10px; margin: 10px 0; border-radius: 4px; display: none;"></div>
+
+    <h3>Delete Event</h3>
+    <form onsubmit="event.preventDefault(); deleteEvent();">
+      <input type="number" id="deleteId" placeholder="Event ID" required>
+      <button type="submit" style="background-color: #dc3545;">Delete Event</button>
+    </form>
+    <div id="deleteMsg" style="padding: 10px; margin: 10px 0; border-radius: 4px; display: none;"></div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 POM City Charity Events | Jake Morea</p>
+  </footer>
+
+  <script>
+    const API = 'http://localhost:3060/api/events';
+
+    async function loadEvents() {
+      try {
+        const res = await fetch(API);
+        const events = await res.json();
+        
+        if (!events.length) {
+          document.getElementById('events').innerHTML = '<p>No events available.</p>';
+          return;
+        }
+
+        document.getElementById('events').innerHTML = events.map(e => `
+          <div style="padding: 15px; margin: 10px 0; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px;">
+            <h4 style="margin: 0 0 10px 0;">${e.EventName}</h4>
+            <p style="margin: 5px 0;"><strong>ID:</strong> ${e.EventID}</p>
+            <p style="margin: 5px 0;"><strong>Type:</strong> ${e.EventType || 'N/A'}</p>
+            <p style="margin: 5px 0;"><strong>Date:</strong> ${e.EventDate}</p>
+            <p style="margin: 5px 0;"><strong>Venue:</strong> ${e.VenueName}</p>
+            <p style="margin: 5px 0;"><strong>Price:</strong> K${e.TicketPrice}</p>
+            <button onclick="document.getElementById('updateId').value=${e.EventID}; document.getElementById('updateId').scrollIntoView({behavior: 'smooth'});" 
+                    style="background-color: #0066cc; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; margin: 10px 5px 0 0;">
+              Edit
+            </button>
+            <button onclick="quickDelete(${e.EventID}, '${e.EventName.replace(/'/g, "\\'")}')" 
+                    style="background-color: #dc3545; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; margin: 10px 5px 0 0;">
+              Delete
+            </button>
+          </div>
+        `).join('');
+      } catch (err) {
+        document.getElementById('events').innerHTML = '<p>Error loading events.</p>';
+        console.error(err);
+      }
+    }
+
+    async function updateEvent() {
+      const id = document.getElementById('updateId').value;
+      const name = document.getElementById('updateName').value;
+      const price = document.getElementById('updatePrice').value;
+      
+      if (!id) {
+        showMsg('updateMsg', 'Enter Event ID', false);
+        return;
+      }
+      
+      const data = {};
+      if (name) data.EventName = name;
+      if (price) data.TicketPrice = parseFloat(price);
+      
+      if (Object.keys(data).length === 0) {
+        showMsg('updateMsg', 'Enter at least one field to update', false);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API}/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await res.json();
+        showMsg('updateMsg', result.message || result.error, result.success);
+        
+        if (result.success) {
+          document.getElementById('updateName').value = '';
+          document.getElementById('updatePrice').value = '';
+          document.getElementById('updateId').value = '';
+          loadEvents();
+        }
+      } catch (err) {
+        showMsg('updateMsg', 'Error updating event', false);
+        console.error(err);
+      }
+    }
+
+    async function deleteEvent() {
+      const id = document.getElementById('deleteId').value;
+      
+      if (!id) {
+        showMsg('deleteMsg', 'Enter Event ID', false);
+        return;
+      }
+      
+      if (!confirm(`Are you sure you want to delete event ${id}?`)) {
+        return;
+      }
+      
+      try {
+        const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
+        const result = await res.json();
+        showMsg('deleteMsg', result.message || result.error, result.success);
+        
+        if (result.success) {
+          document.getElementById('deleteId').value = '';
+          loadEvents();
+        }
+      } catch (err) {
+        showMsg('deleteMsg', 'Error deleting event', false);
+        console.error(err);
+      }
+    }
+
+    async function quickDelete(id, name) {
+      if (!confirm(`Delete "${name}"?\n\nNote: Cannot delete if registrations exist.`)) {
+        return;
+      }
+      
+      try {
+        const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
+        const result = await res.json();
+        alert(result.success ? result.message : result.error);
+        
+        if (result.success) {
+          loadEvents();
+        }
+      } catch (err) {
+        alert('Error deleting event');
+        console.error(err);
+      }
+    }
+
+    function showMsg(divId, msg, success) {
+      const div = document.getElementById(divId);
+      div.style.display = 'block';
+      div.style.backgroundColor = success ? '#d4edda' : '#f8d7da';
+      div.style.color = success ? '#155724' : '#721c24';
+      div.style.border = success ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
+      div.textContent = msg;
+      
+      
+    }
+
+    window.onload = loadEvents;
+  </script>
+</body>
+</html>

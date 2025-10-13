@@ -1,4 +1,9 @@
- <title>Register</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Event Registration</title>
   <link rel="stylesheet" href="./styles/style.css">
 </head>
 <body>
@@ -15,19 +20,168 @@
 
   <main>
     <h2>Event Registration</h2>
-    <form>
-      <label>Full Name:</label>
-      <input type="text"><br>
-      <label>Email:</label>
-      <input type="email"><br>
-      <label>Phone:</label>
-      <input type="text"><br>
-      <button type="submit">Register</button>
-    </form>
+    
+    <!-- Event Information Display -->
+    <div id="event-info">Loading event information...</div>
+    
+    <!-- Registration Form -->
+    <div id="registration-form-container">
+      <h3>Your Information</h3>
+      <form id="registrationForm">
+        <label for="fullName">Full Name: *</label>
+        <input type="text" id="fullName" name="fullName" required>
+        
+        <label for="email">Email: *</label>
+        <input type="email" id="email" name="email" required>
+        
+        <label for="phoneNumber">Phone Number:</label>
+        <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="7XXXXXXX">
+        
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" min="1" max="120">
+        
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender">
+          <option value="">-- Select --</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+        
+        <label for="ticketsPurchased">Number of Tickets: *</label>
+        <input type="number" id="ticketsPurchased" name="ticketsPurchased" value="1" min="1" required>
+        
+        <button type="submit">Complete Registration</button>
+      </form>
+    </div>
+    
+    <div id="message"></div>
   </main>
 
   <footer>
     <p>&copy; 2025 POM City Charity Events | Jake Morea</p>
   </footer>
+
+  <script>
+    const API_URL = 'http://localhost:3060/api/events';
+    let currentEventId = null;
+
+    // Get event ID from URL query string
+    function getEventId() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("eventId");
+    }
+
+    // Load event information
+    async function loadEventInfo() {
+      currentEventId = getEventId();
+      const container = document.getElementById("event-info");
+
+      if (!currentEventId) {
+        container.innerHTML = "<p>No event selected. <a href='index.html'>Browse events</a></p>";
+        document.getElementById("registration-form-container").style.display = "none";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/${currentEventId}`);
+        const event = await res.json();
+
+        if (!event || event.error) {
+          container.innerHTML = "<p>Event not found. <a href='index.html'>Browse events</a></p>";
+          document.getElementById("registration-form-container").style.display = "none";
+          return;
+        }
+
+        // Display event information
+        container.innerHTML = `
+          <div style="background-color: #f0f0f0; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <h3>Registering for: ${event.EventName}</h3>
+            <p><strong>Type:</strong> ${event.EventType || "General"}</p>
+            <p><strong>Date:</strong> ${new Date(event.EventDate).toLocaleDateString()}</p>
+            <p><strong>Time:</strong> ${event.StartTime}</p>
+            <p><strong>Location:</strong> ${event.VenueName}</p>
+            <p><strong>Ticket Price:</strong> K${parseFloat(event.TicketPrice).toFixed(2)} per ticket</p>
+          </div>
+        `;
+      } catch (err) {
+        container.innerHTML = "<p>Error loading event information.</p>";
+        console.error(err);
+      }
+    }
+
+    // Handle form submission
+    document.addEventListener('DOMContentLoaded', function() {
+      loadEventInfo();
+
+      const form = document.getElementById('registrationForm');
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // Client-side validation
+        const fullName = document.getElementById('fullName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const ticketsPurchased = parseInt(document.getElementById('ticketsPurchased').value);
+
+        if (!fullName || !email) {
+          alert('Please fill in all required fields (Full Name and Email)');
+          return;
+        }
+
+        if (ticketsPurchased < 1) {
+          alert('Please purchase at least 1 ticket');
+          return;
+        }
+
+        // Prepare registration data
+        const registrationData = {
+          fullName: fullName,
+          email: email,
+          phoneNumber: document.getElementById('phoneNumber').value.trim() || null,
+          age: document.getElementById('age').value ? parseInt(document.getElementById('age').value) : null,
+          gender: document.getElementById('gender').value || null,
+          ticketsPurchased: ticketsPurchased
+        };
+
+        try {
+          // Call API to register
+          const response = await fetch(`${API_URL}/${currentEventId}/register`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(registrationData)
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            // Show confirmation message
+            document.getElementById('message').innerHTML = `
+              <div style="background-color: #d4edda; color: #155724; padding: 15px; margin-top: 20px; border-radius: 5px;">
+                <h3>✅ Registration Successful!</h3>
+                <p>${result.message}</p>
+                <p>Redirecting to event details...</p>
+              </div>
+            `;
+            
+            // Hide form
+            document.getElementById('registration-form-container').style.display = 'none';
+            
+            // Redirect after 3 seconds
+            setTimeout(() => {
+              window.location.href = `eventdetails.html?id=${currentEventId}`;
+            }, 3000);
+          } else {
+            // Show error message
+            alert('Registration failed: ' + result.message);
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Error submitting registration. Please try again.');
+        }
+      });
+    });
+  </script>
 </body>
 </html>

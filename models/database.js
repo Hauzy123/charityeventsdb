@@ -7,6 +7,7 @@ module.exports = {
 	getconnection: ()=>{
 	return mysql.createConnection({
 		host:dbDetails.host,
+		port:dbDetails.port,
 		user:dbDetails.user,
 		password:dbDetails.password,
 		database:dbDetails.database	
