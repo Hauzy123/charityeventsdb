@@ -15,7 +15,7 @@ CREATE TABLE CharityEvents (
     RegistrationLink VARCHAR(255), 
     TicketPrice DECIMAL(8,2) DEFAULT 0.00
 );
-
+comit
 
 CREATE TABLE EventRegistrations (
     RegistrationID INT PRIMARY KEY AUTO_INCREMENT,  -- Unique identifier
