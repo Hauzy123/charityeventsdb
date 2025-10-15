@@ -3,187 +3,1030 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin Panel</title>
-  <link rel="stylesheet" href="./styles/style.css">
+  <title>Admin Dashboard - Charity Events Management</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+    }
+
+    header {
+      background: linear-gradient(135deg, #004a99 0%, #0066cc 100%);
+      color: #fff;
+      padding: 25px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      font-size: 2em;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    nav {
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #fff;
+      background-color: rgba(255,255,255,0.2);
+      padding: 10px 20px;
+      margin: 5px;
+      border-radius: 5px;
+      font-weight: 600;
+      display: inline-block;
+      transition: all 0.3s;
+    }
+
+    nav a:hover {
+      background-color: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+    }
+
+    nav a.active {
+      background-color: #ffd700;
+      color: #004a99;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .dashboard-header {
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+    }
+
+    .dashboard-header h2 {
+      color: #004a99;
+      margin-bottom: 10px;
+    }
+
+    .dashboard-header p {
+      color: #666;
+      font-size: 1.05em;
+    }
+
+    .admin-menu {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .menu-btn {
+      background: #0066cc;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 600;
+      transition: all 0.3s;
+      box-shadow: 0 2px 5px rgba(0,102,204,0.3);
+    }
+
+    .menu-btn:hover {
+      background: #004a99;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,102,204,0.4);
+    }
+
+    .menu-btn.active {
+      background: #ffd700;
+      color: #004a99;
+    }
+
+    .section {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section h3 {
+      color: #004a99;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+      border-bottom: 3px solid #0066cc;
+      padding-bottom: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #0066cc;
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .btn {
+      background: #0066cc;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin-right: 10px;
+    }
+
+    .btn:hover {
+      background: #004a99;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background: #dc3545;
+    }
+
+    .btn-danger:hover {
+      background: #c82333;
+    }
+
+    .btn-success {
+      background: #28a745;
+    }
+
+    .btn-success:hover {
+      background: #218838;
+    }
+
+    .event-card {
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+
+    .event-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-color: #0066cc;
+    }
+
+    .event-card h4 {
+      color: #004a99;
+      margin-bottom: 15px;
+      font-size: 1.3em;
+    }
+
+    .event-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .event-info p {
+      margin: 5px 0;
+      color: #555;
+    }
+
+    .event-info strong {
+      color: #333;
+    }
+
+    .event-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    .message {
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-weight: 500;
+      display: none;
+      animation: slideIn 0.3s;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+      font-size: 1.1em;
+    }
+
+    .registration-list {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .registration-item {
+      background: white;
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      border-left: 4px solid #0066cc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+      margin-left: 10px;
+    }
+
+    .badge-info {
+      background: #17a2b8;
+      color: white;
+    }
+
+    .badge-warning {
+      background: #ffc107;
+      color: #333;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      margin-top: 50px;
+    }
+
+    @media (max-width: 768px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-menu {
+        flex-direction: column;
+      }
+
+      .menu-btn {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h1>POM City Charity Events</h1>
+    <h1>🎯 POM City Charity Events - Admin Dashboard</h1>
     <nav>
       <a href="index.html">Home</a>
       <a href="search.html">Search</a>
-      <a href="register.html">Register</a>
       <a href="eventdetails.html">Event Details</a>
-      <a href="about.html">About Us</a>
       <a href="admin.html" class="active">Admin</a>
     </nav>
   </header>
 
-  <main>
-    <h2>Admin Panel</h2>
-    <p>Manage charity events - update or delete events as needed.</p>
+  <div class="container">
+    <div class="dashboard-header">
+      <h2>Event Management System</h2>
+      <p>Manage charity events - Create, Update, Delete, and View Registrations</p>
+    </div>
 
-    <h3>All Events</h3>
-    <button onclick="loadEvents()" style="background-color: #0066cc; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 10px;">Refresh Events</button>
-    <div id="events"></div>
+    <!-- Admin Menu Navigation -->
+    <div class="admin-menu">
+      <button class="menu-btn active" onclick="showSection('list')">📋 All Events</button>
+      <button class="menu-btn" onclick="showSection('add')">➕ Add New Event</button>
+      <button class="menu-btn" onclick="showSection('update')">✏️ Update Event</button>
+      <button class="menu-btn" onclick="showSection('delete')">🗑️ Delete Event</button>
+    </div>
 
-    <h3>Update Event</h3>
-    <form onsubmit="event.preventDefault(); updateEvent();">
-      <input type="number" id="updateId" placeholder="Event ID" required>
-      <input type="text" id="updateName" placeholder="New Event Name">
-      <input type="number" id="updatePrice" placeholder="New Price (K)" step="0.01">
-      <button type="submit">Update Event</button>
-    </form>
-    <div id="updateMsg" style="padding: 10px; margin: 10px 0; border-radius: 4px; display: none;"></div>
+    <!-- Messages -->
+    <div id="messageContainer"></div>
 
-    <h3>Delete Event</h3>
-    <form onsubmit="event.preventDefault(); deleteEvent();">
-      <input type="number" id="deleteId" placeholder="Event ID" required>
-      <button type="submit">Delete Event</button>
-    </form>
-    <div id="deleteMsg" style="padding: 10px; margin: 10px 0; border-radius: 4px; display: none;"></div>
-  </main>
+    <!-- LIST ALL EVENTS SECTION -->
+    <div id="listSection" class="section active">
+      <h3>📋 All Registered Events</h3>
+      <button class="btn" onclick="loadAllEvents()">🔄 Refresh Events</button>
+      <div id="eventsList" class="loading">Loading events...</div>
+    </div>
+
+    <!-- ADD NEW EVENT SECTION -->
+    <div id="addSection" class="section">
+      <h3>➕ Add New Charity Event</h3>
+      <form id="addEventForm" onsubmit="event.preventDefault(); addNewEvent();">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="addEventName">Event Name: *</label>
+            <input type="text" id="addEventName" required placeholder="e.g., Hope Run 2025">
+          </div>
+          <div class="form-group">
+            <label for="addEventType">Event Type/Category: *</label>
+            <input type="text" id="addEventType" required placeholder="e.g., Fundraiser, Awareness Walk">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="addDescription">Description: *</label>
+          <textarea id="addDescription" required placeholder="Describe the event purpose and activities..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="addEventDate">Event Date: *</label>
+            <input type="date" id="addEventDate" required>
+          </div>
+          <div class="form-group">
+            <label for="addStartTime">Start Time: *</label>
+            <input type="time" id="addStartTime" required>
+          </div>
+          <div class="form-group">
+            <label for="addEndTime">End Time:</label>
+            <input type="time" id="addEndTime">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="addVenueName">Venue Name: *</label>
+            <input type="text" id="addVenueName" required placeholder="e.g., Ela Beach">
+          </div>
+          <div class="form-group">
+            <label for="addAddress">Address:</label>
+            <input type="text" id="addAddress" placeholder="Full venue address">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="addOrganizerName">Organizer Name: *</label>
+            <input type="text" id="addOrganizerName" required placeholder="Organization name">
+          </div>
+          <div class="form-group">
+            <label for="addContactEmail">Contact Email: *</label>
+            <input type="email" id="addContactEmail" required placeholder="contact@example.org">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="addWebsiteURL">Website URL:</label>
+            <input type="url" id="addWebsiteURL" placeholder="https://example.org">
+          </div>
+          <div class="form-group">
+            <label for="addRegistrationLink">Registration Link:</label>
+            <input type="url" id="addRegistrationLink" placeholder="https://example.org/register">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="addTicketPrice">Ticket Price (K): *</label>
+          <input type="number" id="addTicketPrice" step="0.01" min="0" value="0.00" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">✅ Save New Event</button>
+        <button type="reset" class="btn">🔄 Clear Form</button>
+      </form>
+    </div>
+
+    <!-- UPDATE EVENT SECTION -->
+    <div id="updateSection" class="section">
+      <h3>✏️ Update Existing Event</h3>
+      
+      <div class="form-group">
+        <label for="updateEventSelect">Select Event to Update: *</label>
+        <select id="updateEventSelect" onchange="loadEventForUpdate()">
+          <option value="">-- Select an Event --</option>
+        </select>
+      </div>
+
+      <div id="updateFormContainer" style="display: none;">
+        <form id="updateEventForm" onsubmit="event.preventDefault(); updateEvent();">
+          <input type="hidden" id="updateEventId">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="updateEventName">Event Name:</label>
+              <input type="text" id="updateEventName" placeholder="Leave blank to keep current">
+            </div>
+            <div class="form-group">
+              <label for="updateEventType">Event Type:</label>
+              <input type="text" id="updateEventType" placeholder="Leave blank to keep current">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="updateDescription">Description:</label>
+            <textarea id="updateDescription" placeholder="Leave blank to keep current"></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="updateEventDate">Event Date:</label>
+              <input type="date" id="updateEventDate">
+            </div>
+            <div class="form-group">
+              <label for="updateStartTime">Start Time:</label>
+              <input type="time" id="updateStartTime">
+            </div>
+            <div class="form-group">
+              <label for="updateEndTime">End Time:</label>
+              <input type="time" id="updateEndTime">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="updateVenueName">Venue Name:</label>
+              <input type="text" id="updateVenueName">
+            </div>
+            <div class="form-group">
+              <label for="updateAddress">Address:</label>
+              <input type="text" id="updateAddress">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="updateOrganizerName">Organizer Name:</label>
+              <input type="text" id="updateOrganizerName">
+            </div>
+            <div class="form-group">
+              <label for="updateContactEmail">Contact Email:</label>
+              <input type="email" id="updateContactEmail">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="updateWebsiteURL">Website URL:</label>
+              <input type="url" id="updateWebsiteURL">
+            </div>
+            <div class="form-group">
+              <label for="updateRegistrationLink">Registration Link:</label>
+              <input type="url" id="updateRegistrationLink">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="updateTicketPrice">Ticket Price (K):</label>
+            <input type="number" id="updateTicketPrice" step="0.01" min="0">
+          </div>
+
+          <!-- Display Registrations -->
+          <div id="updateRegistrationsContainer"></div>
+
+          <button type="submit" class="btn btn-success">💾 Update Event</button>
+          <button type="button" class="btn" onclick="cancelUpdate()">❌ Cancel</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- DELETE EVENT SECTION -->
+    <div id="deleteSection" class="section">
+      <h3>🗑️ Delete Event</h3>
+      <p style="color: #dc3545; margin-bottom: 20px;">
+        <strong>⚠️ Warning:</strong> Events with existing registrations cannot be deleted to maintain data integrity.
+      </p>
+
+      <div class="form-group">
+        <label for="deleteEventSelect">Select Event to Delete: *</label>
+        <select id="deleteEventSelect" onchange="showDeletePreview()">
+          <option value="">-- Select an Event --</option>
+        </select>
+      </div>
+
+      <div id="deletePreview" style="display: none;">
+        <div class="event-card">
+          <h4 id="deleteEventName"></h4>
+          <div id="deleteEventDetails"></div>
+          <div id="deleteRegistrationInfo"></div>
+        </div>
+
+        <button class="btn btn-danger" onclick="confirmDelete()">🗑️ Confirm Delete</button>
+        <button class="btn" onclick="cancelDelete()">❌ Cancel</button>
+      </div>
+    </div>
+
+  </div>
 
   <footer>
-    <p>&copy; 2025 POM City Charity Events | Jake Morea</p>
+    <p>&copy; 2025 POM City Charity Events | Admin Dashboard</p>
   </footer>
 
   <script>
-    const API = 'http://localhost:3060/api/events';
+    const API_URL = 'http://localhost:3060/api/events';
+    let allEvents = [];
 
-    async function loadEvents() {
+    // Initialize on page load
+    window.onload = function() {
+      loadAllEvents();
+      loadEventSelectors();
+    };
+
+    // Section Navigation
+    function showSection(sectionName) {
+      // Hide all sections
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+
+      // Show selected section
+      const sectionMap = {
+        'list': 'listSection',
+        'add': 'addSection',
+        'update': 'updateSection',
+        'delete': 'deleteSection'
+      };
+
+      document.getElementById(sectionMap[sectionName]).classList.add('active');
+      event.target.classList.add('active');
+
+      // Reload data when switching sections
+      if (sectionName === 'list') {
+        loadAllEvents();
+      } else if (sectionName === 'update' || sectionName === 'delete') {
+        loadEventSelectors();
+      }
+    }
+
+    // Show Message
+    function showMessage(message, type = 'success') {
+      const container = document.getElementById('messageContainer');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `message ${type}`;
+      msgDiv.textContent = message;
+      msgDiv.style.display = 'block';
+      
+      container.innerHTML = '';
+      container.appendChild(msgDiv);
+
+      // Auto hide after 5 seconds
+      setTimeout(() => {
+        msgDiv.style.display = 'none';
+      }, 5000);
+
+      // Scroll to message
+      msgDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // LOAD ALL EVENTS WITH REGISTRATIONS
+    async function loadAllEvents() {
+      const container = document.getElementById('eventsList');
+      container.innerHTML = '<div class="loading">Loading events...</div>';
+
       try {
-        const res = await fetch(API);
-        const events = await res.json();
-        
-        if (!events.length) {
-          document.getElementById('events').innerHTML = '<p>No events available.</p>';
+        const response = await fetch(`${API_URL}`);
+        allEvents = await response.json();
+
+        if (!allEvents.length) {
+          container.innerHTML = '<p style="text-align:center; color: #999;">No events found. Add your first event!</p>';
           return;
         }
 
-        document.getElementById('events').innerHTML = events.map(e => `
-          <div style="padding: 15px; margin: 10px 0; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px;">
-            <h4 style="margin: 0 0 10px 0;">${e.EventName}</h4>
-            <p style="margin: 5px 0;"><strong>ID:</strong> ${e.EventID}</p>
-            <p style="margin: 5px 0;"><strong>Type:</strong> ${e.EventType || 'N/A'}</p>
-            <p style="margin: 5px 0;"><strong>Date:</strong> ${e.EventDate}</p>
-            <p style="margin: 5px 0;"><strong>Venue:</strong> ${e.VenueName}</p>
-            <p style="margin: 5px 0;"><strong>Price:</strong> K${e.TicketPrice}</p>
-            <button onclick="document.getElementById('updateId').value=${e.EventID}; document.getElementById('updateId').scrollIntoView({behavior: 'smooth'});" 
-                    style="background-color: #0066cc; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; margin: 10px 5px 0 0;">
-              Edit
-            </button>
-            <button onclick="quickDelete(${e.EventID}, '${e.EventName.replace(/'/g, "\\'")}')" 
-                    style="background-color: #0066cc; color: white; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; margin: 10px 5px 0 0;">
-              Delete
-            </button>
-          </div>
-        `).join('');
-      } catch (err) {
-        document.getElementById('events').innerHTML = '<p>Error loading events.</p>';
-        console.error(err);
+        let html = '';
+        for (const event of allEvents) {
+          // Fetch registrations for each event
+          const regResponse = await fetch(`${API_URL}/${event.EventID}/registrations`);
+          const regData = await regResponse.json();
+          const regCount = regData.count || 0;
+
+          html += `
+            <div class="event-card">
+              <h4>${event.EventName} <span class="badge badge-info">${regCount} Registrations</span></h4>
+              <div class="event-info">
+                <p><strong>ID:</strong> ${event.EventID}</p>
+                <p><strong>Type:</strong> ${event.EventType || 'N/A'}</p>
+                <p><strong>Date:</strong> ${formatDate(event.EventDate)}</p>
+                <p><strong>Time:</strong> ${event.StartTime} - ${event.EndTime || 'N/A'}</p>
+                <p><strong>Venue:</strong> ${event.VenueName}</p>
+                <p><strong>Price:</strong> K${parseFloat(event.TicketPrice).toFixed(2)}</p>
+                <p><strong>Organizer:</strong> ${event.OrganizerName}</p>
+                <p><strong>Contact:</strong> ${event.ContactEmail}</p>
+              </div>
+              ${event.Description ? `<p><strong>Description:</strong> ${event.Description}</p>` : ''}
+              
+              ${regCount > 0 ? `
+                <div class="registration-list">
+                  <h5>📝 Recent Registrations:</h5>
+                  ${regData.registrations.slice(0, 3).map(reg => `
+                    <div class="registration-item">
+                      <strong>${reg.FullName}</strong> (${reg.Email})<br>
+                      Tickets: ${reg.TicketsPurchased} | Registered: ${formatDate(reg.RegistrationDate)}
+                    </div>
+                  `).join('')}
+                  ${regCount > 3 ? `<p style="margin-top: 10px; color: #666;">... and ${regCount - 3} more</p>` : ''}
+                </div>
+              ` : '<p style="color: #999; margin-top: 10px;">No registrations yet.</p>'}
+
+              <div class="event-actions">
+                <button class="btn" onclick="editEvent(${event.EventID})">✏️ Edit</button>
+                <button class="btn btn-danger" onclick="deleteEventQuick(${event.EventID}, '${event.EventName.replace(/'/g, "\\'")}')">🗑️ Delete</button>
+              </div>
+            </div>
+          `;
+        }
+
+        container.innerHTML = html;
+      } catch (error) {
+        console.error('Error loading events:', error);
+        container.innerHTML = '<p style="color: #dc3545; text-align: center;">Error loading events. Please check your server connection.</p>';
       }
     }
 
-    async function updateEvent() {
-      const id = document.getElementById('updateId').value;
-      const name = document.getElementById('updateName').value;
-      const price = document.getElementById('updatePrice').value;
-      
-      if (!id) {
-        showMsg('updateMsg', 'Enter Event ID', false);
-        return;
-      }
-      
-      const data = {};
-      if (name) data.EventName = name;
-      if (price) data.TicketPrice = parseFloat(price);
-      
-      if (Object.keys(data).length === 0) {
-        showMsg('updateMsg', 'Enter at least one field to update', false);
+    // ADD NEW EVENT
+    async function addNewEvent() {
+      // Get form values
+      const eventData = {
+        EventName: document.getElementById('addEventName').value.trim(),
+        EventType: document.getElementById('addEventType').value.trim(),
+        Description: document.getElementById('addDescription').value.trim(),
+        EventDate: document.getElementById('addEventDate').value,
+        StartTime: document.getElementById('addStartTime').value,
+        EndTime: document.getElementById('addEndTime').value || null,
+        VenueName: document.getElementById('addVenueName').value.trim(),
+        Address: document.getElementById('addAddress').value.trim() || null,
+        OrganizerName: document.getElementById('addOrganizerName').value.trim(),
+        ContactEmail: document.getElementById('addContactEmail').value.trim(),
+        WebsiteURL: document.getElementById('addWebsiteURL').value.trim() || null,
+        RegistrationLink: document.getElementById('addRegistrationLink').value.trim() || null,
+        TicketPrice: parseFloat(document.getElementById('addTicketPrice').value)
+      };
+
+      // Validation
+      if (!eventData.EventName || !eventData.EventType || !eventData.EventDate || 
+          !eventData.StartTime || !eventData.VenueName || !eventData.OrganizerName || 
+          !eventData.ContactEmail) {
+        showMessage('Please fill in all required fields marked with *', 'error');
         return;
       }
 
       try {
-        const res = await fetch(`${API}/${id}`, {
+        const response = await fetch(`${API_URL}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(eventData)
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          showMessage('✅ Event added successfully!', 'success');
+          document.getElementById('addEventForm').reset();
+          loadAllEvents();
+          loadEventSelectors();
+        } else {
+          showMessage('❌ Failed to add event: ' + (result.error || 'Unknown error'), 'error');
+        }
+      } catch (error) {
+        console.error('Error adding event:', error);
+        showMessage('❌ Error adding event. Please try again.', 'error');
+      }
+    }
+
+    // LOAD EVENT SELECTORS (for update and delete)
+    async function loadEventSelectors() {
+      try {
+        const response = await fetch(`${API_URL}`);
+        allEvents = await response.json();
+
+        const updateSelect = document.getElementById('updateEventSelect');
+        const deleteSelect = document.getElementById('deleteEventSelect');
+
+        updateSelect.innerHTML = '<option value="">-- Select an Event --</option>';
+        deleteSelect.innerHTML = '<option value="">-- Select an Event --</option>';
+
+        allEvents.forEach(event => {
+          const option1 = document.createElement('option');
+          option1.value = event.EventID;
+          option1.textContent = `${event.EventName} (${formatDate(event.EventDate)})`;
+          updateSelect.appendChild(option1);
+
+          const option2 = option1.cloneNode(true);
+          deleteSelect.appendChild(option2);
+        });
+      } catch (error) {
+        console.error('Error loading events for selectors:', error);
+      }
+    }
+
+    // LOAD EVENT FOR UPDATE
+    async function loadEventForUpdate() {
+      const eventId = document.getElementById('updateEventSelect').value;
+      
+      if (!eventId) {
+        document.getElementById('updateFormContainer').style.display = 'none';
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/${eventId}`);
+        const event = await response.json();
+
+        // Populate form fields
+        document.getElementById('updateEventId').value = event.EventID;
+        document.getElementById('updateEventName').value = event.EventName;
+        document.getElementById('updateEventType').value = event.EventType || '';
+        document.getElementById('updateDescription').value = event.Description || '';
+        document.getElementById('updateEventDate').value = event.EventDate ? event.EventDate.split('T')[0] : '';
+        document.getElementById('updateStartTime').value = event.StartTime || '';
+        document.getElementById('updateEndTime').value = event.EndTime || '';
+        document.getElementById('updateVenueName').value = event.VenueName || '';
+        document.getElementById('updateAddress').value = event.Address || '';
+        document.getElementById('updateOrganizerName').value = event.OrganizerName || '';
+        document.getElementById('updateContactEmail').value = event.ContactEmail || '';
+        document.getElementById('updateWebsiteURL').value = event.WebsiteURL || '';
+        document.getElementById('updateRegistrationLink').value = event.RegistrationLink || '';
+        document.getElementById('updateTicketPrice').value = event.TicketPrice || '';
+
+        // Load registrations
+        const regResponse = await fetch(`${API_URL}/${eventId}/registrations`);
+        const regData = await regResponse.json();
+        
+        const regContainer = document.getElementById('updateRegistrationsContainer');
+        if (regData.count > 0) {
+          regContainer.innerHTML = `
+            <div class="registration-list">
+              <h4>📝 Event Registrations (${regData.count})</h4>
+              ${regData.registrations.map(reg => `
+                <div class="registration-item">
+                  <strong>${reg.FullName}</strong> (${reg.Email})<br>
+                  Tickets: ${reg.TicketsPurchased} | Registered: ${formatDate(reg.RegistrationDate)}
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          regContainer.innerHTML = '<p style="color: #999;">No registrations for this event.</p>';
+        }
+
+        document.getElementById('updateFormContainer').style.display = 'block';
+      } catch (error) {
+        console.error('Error loading event:', error);
+        showMessage('Error loading event details', 'error');
+      }
+    }
+
+    // UPDATE EVENT
+    async function updateEvent() {
+      const eventId = document.getElementById('updateEventId').value;
+      
+      // Collect only filled fields
+      const eventData = {};
+      const fields = [
+        'EventName', 'EventType', 'Description', 'EventDate', 'StartTime', 'EndTime',
+        'VenueName', 'Address', 'OrganizerName', 'ContactEmail', 'WebsiteURL', 'RegistrationLink'
+      ];
+
+      fields.forEach(field => {
+        const value = document.getElementById(`update${field}`).value.trim();
+        if (value) {
+          eventData[field] = value;
+        }
+      });
+
+      // Handle ticket price separately
+      const ticketPrice = document.getElementById('updateTicketPrice').value;
+      if (ticketPrice !== '') {
+        eventData.TicketPrice = parseFloat(ticketPrice);
+      }
+
+      if (Object.keys(eventData).length === 0) {
+        showMessage('Please modify at least one field to update', 'error');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/${eventId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+          body: JSON.stringify(eventData)
         });
-        
-        const result = await res.json();
-        showMsg('updateMsg', result.message || result.error, result.success);
-        
+
+        const result = await response.json();
+
         if (result.success) {
-          document.getElementById('updateName').value = '';
-          document.getElementById('updatePrice').value = '';
-          document.getElementById('updateId').value = '';
-          loadEvents();
+          showMessage('✅ Event updated successfully!', 'success');
+          loadAllEvents();
+          loadEventSelectors();
+          cancelUpdate();
+        } else {
+          showMessage('❌ Failed to update: ' + (result.error || 'Unknown error'), 'error');
         }
-      } catch (err) {
-        showMsg('updateMsg', 'Error updating event', false);
-        console.error(err);
+      } catch (error) {
+        console.error('Error updating event:', error);
+        showMessage('❌ Error updating event. Please try again.', 'error');
       }
     }
 
-    async function deleteEvent() {
-      const id = document.getElementById('deleteId').value;
+    // CANCEL UPDATE
+    function cancelUpdate() {
+      document.getElementById('updateEventSelect').value = '';
+      document.getElementById('updateFormContainer').style.display = 'none';
+      document.getElementById('updateEventForm').reset();
+    }
+
+    // EDIT EVENT (from list view)
+    function editEvent(eventId) {
+      showSection('update');
+      document.getElementById('updateEventSelect').value = eventId;
+      loadEventForUpdate();
+    }
+
+    // SHOW DELETE PREVIEW
+    async function showDeletePreview() {
+      const eventId = document.getElementById('deleteEventSelect').value;
       
-      if (!id) {
-        showMsg('deleteMsg', 'Enter Event ID', false);
+      if (!eventId) {
+        document.getElementById('deletePreview').style.display = 'none';
         return;
       }
-      
-      if (!confirm(`Are you sure you want to delete event ${id}?`)) {
-        return;
-      }
-      
+
       try {
-        const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
-        const result = await res.json();
-        showMsg('deleteMsg', result.message || result.error, result.success);
-        
-        if (result.success) {
-          document.getElementById('deleteId').value = '';
-          loadEvents();
+        const response = await fetch(`${API_URL}/${eventId}`);
+        const event = await response.json();
+
+        const regResponse = await fetch(`${API_URL}/${eventId}/registrations`);
+        const regData = await regResponse.json();
+        const regCount = regData.count || 0;
+
+        document.getElementById('deleteEventName').textContent = event.EventName;
+        document.getElementById('deleteEventDetails').innerHTML = `
+          <p><strong>Type:</strong> ${event.EventType || 'N/A'}</p>
+          <p><strong>Date:</strong> ${formatDate(event.EventDate)}</p>
+          <p><strong>Venue:</strong> ${event.VenueName}</p>
+          <p><strong>Organizer:</strong> ${event.OrganizerName}</p>
+        `;
+
+        if (regCount > 0) {
+          document.getElementById('deleteRegistrationInfo').innerHTML = `
+            <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radius: 8px; margin-top: 15px;">
+              <strong style="color: #856404;">⚠️ Warning:</strong> This event has ${regCount} registration(s). 
+              It cannot be deleted to maintain data integrity.
+            </div>
+          `;
+          document.querySelector('#deletePreview .btn-danger').disabled = true;
+          document.querySelector('#deletePreview .btn-danger').style.opacity = '0.5';
+          document.querySelector('#deletePreview .btn-danger').style.cursor = 'not-allowed';
+        } else {
+          document.getElementById('deleteRegistrationInfo').innerHTML = `
+            <div style="background: #d1ecf1; border: 2px solid #bee5eb; padding: 15px; border-radius: 8px; margin-top: 15px;">
+              <strong style="color: #0c5460;">✓ Safe to delete:</strong> No registrations found for this event.
+            </div>
+          `;
+          document.querySelector('#deletePreview .btn-danger').disabled = false;
+          document.querySelector('#deletePreview .btn-danger').style.opacity = '1';
+          document.querySelector('#deletePreview .btn-danger').style.cursor = 'pointer';
         }
-      } catch (err) {
-        showMsg('deleteMsg', 'Error deleting event', false);
-        console.error(err);
+
+        document.getElementById('deletePreview').style.display = 'block';
+      } catch (error) {
+        console.error('Error loading event for delete:', error);
+        showMessage('Error loading event details', 'error');
       }
     }
 
-    async function quickDelete(id, name) {
-      if (!confirm(`Delete "${name}"?\n\nNote: Cannot delete if registrations exist.`)) {
+    // CONFIRM DELETE
+    async function confirmDelete() {
+      const eventId = document.getElementById('deleteEventSelect').value;
+      const eventName = document.getElementById('deleteEventName').textContent;
+
+      if (!confirm(`Are you absolutely sure you want to delete "${eventName}"?\n\nThis action cannot be undone.`)) {
         return;
       }
-      
+
       try {
-        const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
-        const result = await res.json();
-        alert(result.success ? result.message : result.error);
-        
+        const response = await fetch(`${API_URL}/${eventId}`, {
+          method: 'DELETE'
+        });
+
+        const result = await response.json();
+
         if (result.success) {
-          loadEvents();
+          showMessage('✅ Event deleted successfully!', 'success');
+          loadAllEvents();
+          loadEventSelectors();
+          cancelDelete();
+        } else {
+          showMessage('❌ Failed to delete: ' + (result.error || 'Unknown error'), 'error');
         }
-      } catch (err) {
-        alert('Error deleting event');
-        console.error(err);
+      } catch (error) {
+        console.error('Error deleting event:', error);
+        showMessage('❌ Error deleting event. Please try again.', 'error');
       }
     }
 
-    function showMsg(divId, msg, success) {
-      const div = document.getElementById(divId);
-      div.style.display = 'block';
-      div.style.backgroundColor = success ? '#d4edda' : '#f8d7da';
-      div.style.color = success ? '#155724' : '#721c24';
-      div.style.border = success ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
-      div.textContent = msg;
-      
-      
+    // CANCEL DELETE
+    function cancelDelete() {
+      document.getElementById('deleteEventSelect').value = '';
+      document.getElementById('deletePreview').style.display = 'none';
     }
 
-    window.onload = loadEvents;
+    // QUICK DELETE FROM LIST VIEW
+    async function deleteEventQuick(eventId, eventName) {
+      if (!confirm(`Delete "${eventName}"?\n\nNote: Events with registrations cannot be deleted.`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/${eventId}`, {
+          method: 'DELETE'
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showMessage('✅ Event deleted successfully!', 'success');
+          loadAllEvents();
+          loadEventSelectors();
+        } else {
+          showMessage('❌ ' + (result.error || 'Failed to delete event'), 'error');
+        }
+      } catch (error) {
+        console.error('Error deleting event:', error);
+        showMessage('❌ Error deleting event. Please try again.', 'error');
+      }
+    }
+
+    // UTILITY: Format Date
+    function formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    }
   </script>
 </body>
 </html>
