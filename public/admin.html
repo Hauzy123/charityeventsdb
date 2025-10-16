@@ -3,88 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin Dashboard - Charity Events Management</title>
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="./styles/style.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f0f2f5;
-      color: #333;
-    }
-
-    header {
-      background: linear-gradient(135deg, #004a99 0%, #0066cc 100%);
-      color: #fff;
-      padding: 25px 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    header h1 {
-      font-size: 2em;
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    nav {
-      text-align: center;
-      margin-top: 15px;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: #fff;
-      background-color: rgba(255,255,255,0.2);
-      padding: 10px 20px;
-      margin: 5px;
-      border-radius: 5px;
-      font-weight: 600;
-      display: inline-block;
-      transition: all 0.3s;
-    }
-
-    nav a:hover {
-      background-color: rgba(255,255,255,0.3);
-      transform: translateY(-2px);
-    }
-
-    nav a.active {
-      background-color: #ffd700;
-      color: #004a99;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
-    .dashboard-header {
-      background: #fff;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      margin-bottom: 30px;
-    }
-
-    .dashboard-header h2 {
-      color: #004a99;
-      margin-bottom: 10px;
-    }
-
-    .dashboard-header p {
-      color: #666;
-      font-size: 1.05em;
-    }
-
+    /* Admin-specific styles only */
     .admin-menu {
       display: flex;
-      gap: 15px;
-      margin-bottom: 30px;
+      gap: 10px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
     }
 
@@ -92,182 +18,121 @@
       background: #0066cc;
       color: white;
       border: none;
-      padding: 12px 25px;
-      border-radius: 8px;
+      padding: 10px 20px;
+      border-radius: 4px;
       cursor: pointer;
       font-size: 1em;
-      font-weight: 600;
-      transition: all 0.3s;
-      box-shadow: 0 2px 5px rgba(0,102,204,0.3);
+      font-weight: bold;
     }
 
     .menu-btn:hover {
       background: #004a99;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,102,204,0.4);
     }
 
     .menu-btn.active {
       background: #ffd700;
-      color: #004a99;
+      color: #333;
     }
 
     .section {
-      background: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-      margin-bottom: 30px;
       display: none;
+      margin-top: 20px;
     }
 
     .section.active {
       display: block;
-      animation: fadeIn 0.3s;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .section h3 {
-      color: #004a99;
-      margin-bottom: 20px;
-      font-size: 1.5em;
-      border-bottom: 3px solid #0066cc;
-      padding-bottom: 10px;
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 15px;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #333;
+      margin-bottom: 5px;
+      font-weight: bold;
     }
 
     .form-group input,
     .form-group textarea,
     .form-group select {
       width: 100%;
-      padding: 12px;
-      border: 2px solid #e0e0e0;
-      border-radius: 6px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
       font-size: 1em;
-      transition: border-color 0.3s;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: #0066cc;
     }
 
     .form-group textarea {
-      min-height: 100px;
+      min-height: 80px;
       resize: vertical;
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
     }
 
     .btn {
       background: #0066cc;
       color: white;
       border: none;
-      padding: 12px 30px;
-      border-radius: 6px;
+      padding: 10px 20px;
+      border-radius: 4px;
       cursor: pointer;
       font-size: 1em;
-      font-weight: 600;
-      transition: all 0.3s;
       margin-right: 10px;
+      margin-top: 10px;
     }
 
     .btn:hover {
       background: #004a99;
-      transform: translateY(-2px);
     }
 
     .btn-danger {
-      background: #dc3545;
+      background: #0066cc;
     }
 
     .btn-danger:hover {
-      background: #c82333;
+      background: #004a99;
     }
 
     .btn-success {
-      background: #28a745;
+      background: #0066cc;
     }
 
     .btn-success:hover {
-      background: #218838;
+      background: #004a99;
     }
 
     .event-card {
-      background: #f8f9fa;
-      border: 2px solid #e9ecef;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-      transition: all 0.3s;
-    }
-
-    .event-card:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      border-color: #0066cc;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 15px;
+      margin-bottom: 15px;
     }
 
     .event-card h4 {
+      margin-bottom: 10px;
       color: #004a99;
-      margin-bottom: 15px;
-      font-size: 1.3em;
-    }
-
-    .event-info {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 10px;
-      margin-bottom: 15px;
     }
 
     .event-info p {
       margin: 5px 0;
-      color: #555;
-    }
-
-    .event-info strong {
-      color: #333;
     }
 
     .event-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 15px;
+      margin-top: 10px;
     }
 
     .message {
-      padding: 15px 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-weight: 500;
+      padding: 10px 15px;
+      border-radius: 4px;
+      margin-bottom: 15px;
       display: none;
-      animation: slideIn 0.3s;
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-20px); }
-      to { opacity: 1; transform: translateX(0); }
     }
 
     .message.success {
@@ -284,91 +149,63 @@
 
     .loading {
       text-align: center;
-      padding: 40px;
+      padding: 20px;
       color: #666;
-      font-size: 1.1em;
     }
 
     .registration-list {
-      background: #f8f9fa;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 15px;
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 10px;
     }
 
     .registration-item {
       background: white;
-      padding: 15px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      border-left: 4px solid #0066cc;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      border-left: 3px solid #0066cc;
     }
 
     .badge {
       display: inline-block;
-      padding: 5px 12px;
-      border-radius: 20px;
+      padding: 3px 8px;
+      border-radius: 12px;
       font-size: 0.85em;
-      font-weight: 600;
-      margin-left: 10px;
+      font-weight: bold;
+      margin-left: 8px;
     }
 
     .badge-info {
       background: #17a2b8;
       color: white;
     }
-
-    .badge-warning {
-      background: #ffc107;
-      color: #333;
-    }
-
-    footer {
-      background-color: #333;
-      color: #fff;
-      text-align: center;
-      padding: 20px;
-      margin-top: 50px;
-    }
-
-    @media (max-width: 768px) {
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-
-      .admin-menu {
-        flex-direction: column;
-      }
-
-      .menu-btn {
-        width: 100%;
-      }
-    }
   </style>
 </head>
 <body>
   <header>
-    <h1>🎯 POM City Charity Events - Admin Dashboard</h1>
+    <h1>POM City Charity Events</h1>
     <nav>
       <a href="index.html">Home</a>
       <a href="search.html">Search</a>
+      <a href="register.html">Register</a>
       <a href="eventdetails.html">Event Details</a>
+      <a href="about.html">About Us</a>
       <a href="admin.html" class="active">Admin</a>
     </nav>
   </header>
 
-  <div class="container">
-    <div class="dashboard-header">
-      <h2>Event Management System</h2>
-      <p>Manage charity events - Create, Update, Delete, and View Registrations</p>
-    </div>
+  <main>
+    <h2>Admin Panel</h2>
+    <p>Manage charity events - Create, Update, Delete, and View Registrations</p>
 
     <!-- Admin Menu Navigation -->
     <div class="admin-menu">
-      <button class="menu-btn active" onclick="showSection('list')">📋 All Events</button>
-      <button class="menu-btn" onclick="showSection('add')">➕ Add New Event</button>
-      <button class="menu-btn" onclick="showSection('update')">✏️ Update Event</button>
-      <button class="menu-btn" onclick="showSection('delete')">🗑️ Delete Event</button>
+      <button class="menu-btn active" onclick="showSection('list')">All Events</button>
+      <button class="menu-btn" onclick="showSection('add')">Add New Event</button>
+      <button class="menu-btn" onclick="showSection('update')">Update Event</button>
+      <button class="menu-btn" onclick="showSection('delete')">Delete Event</button>
     </div>
 
     <!-- Messages -->
@@ -376,14 +213,14 @@
 
     <!-- LIST ALL EVENTS SECTION -->
     <div id="listSection" class="section active">
-      <h3>📋 All Registered Events</h3>
-      <button class="btn" onclick="loadAllEvents()">🔄 Refresh Events</button>
+      <h3>All Registered Events</h3>
+      <button class="btn" onclick="loadAllEvents()">Refresh Events</button>
       <div id="eventsList" class="loading">Loading events...</div>
     </div>
 
     <!-- ADD NEW EVENT SECTION -->
     <div id="addSection" class="section">
-      <h3>➕ Add New Charity Event</h3>
+      <h3>Add New Charity Event</h3>
       <form id="addEventForm" onsubmit="event.preventDefault(); addNewEvent();">
         <div class="form-row">
           <div class="form-group">
@@ -454,14 +291,14 @@
           <input type="number" id="addTicketPrice" step="0.01" min="0" value="0.00" required>
         </div>
 
-        <button type="submit" class="btn btn-success">✅ Save New Event</button>
-        <button type="reset" class="btn">🔄 Clear Form</button>
+        <button type="submit" class="btn btn-success">Save New Event</button>
+        <button type="reset" class="btn">Clear Form</button>
       </form>
     </div>
 
     <!-- UPDATE EVENT SECTION -->
     <div id="updateSection" class="section">
-      <h3>✏️ Update Existing Event</h3>
+      <h3>Update Existing Event</h3>
       
       <div class="form-group">
         <label for="updateEventSelect">Select Event to Update: *</label>
@@ -546,17 +383,17 @@
           <!-- Display Registrations -->
           <div id="updateRegistrationsContainer"></div>
 
-          <button type="submit" class="btn btn-success">💾 Update Event</button>
-          <button type="button" class="btn" onclick="cancelUpdate()">❌ Cancel</button>
+          <button type="submit" class="btn btn-success">Update Event</button>
+          <button type="button" class="btn" onclick="cancelUpdate()">Cancel</button>
         </form>
       </div>
     </div>
 
     <!-- DELETE EVENT SECTION -->
     <div id="deleteSection" class="section">
-      <h3>🗑️ Delete Event</h3>
-      <p style="color: #dc3545; margin-bottom: 20px;">
-        <strong>⚠️ Warning:</strong> Events with existing registrations cannot be deleted to maintain data integrity.
+      <h3>Delete Event</h3>
+      <p style="color: #dc3545; margin-bottom: 15px;">
+        <strong>Warning:</strong> Events with existing registrations cannot be deleted to maintain data integrity.
       </p>
 
       <div class="form-group">
@@ -573,15 +410,15 @@
           <div id="deleteRegistrationInfo"></div>
         </div>
 
-        <button class="btn btn-danger" onclick="confirmDelete()">🗑️ Confirm Delete</button>
-        <button class="btn" onclick="cancelDelete()">❌ Cancel</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Confirm Delete</button>
+        <button class="btn" onclick="cancelDelete()">Cancel</button>
       </div>
     </div>
 
-  </div>
+  </main>
 
   <footer>
-    <p>&copy; 2025 POM City Charity Events | Admin Dashboard</p>
+    <p>&copy; 2025 POM City Charity Events | Jake Morea</p>
   </footer>
 
   <script>
@@ -677,7 +514,7 @@
               
               ${regCount > 0 ? `
                 <div class="registration-list">
-                  <h5>📝 Recent Registrations:</h5>
+                  <h5>Recent Registrations:</h5>
                   ${regData.registrations.slice(0, 3).map(reg => `
                     <div class="registration-item">
                       <strong>${reg.FullName}</strong> (${reg.Email})<br>
@@ -689,8 +526,8 @@
               ` : '<p style="color: #999; margin-top: 10px;">No registrations yet.</p>'}
 
               <div class="event-actions">
-                <button class="btn" onclick="editEvent(${event.EventID})">✏️ Edit</button>
-                <button class="btn btn-danger" onclick="deleteEventQuick(${event.EventID}, '${event.EventName.replace(/'/g, "\\'")}')">🗑️ Delete</button>
+                <button class="btn" onclick="editEvent(${event.EventID})">Edit</button>
+                <button class="btn btn-danger" onclick="deleteEventQuick(${event.EventID}, '${event.EventName.replace(/'/g, "\\'")}')">Delete</button>
               </div>
             </div>
           `;
@@ -740,20 +577,20 @@
         const result = await response.json();
 
         if (response.ok && result.success) {
-          showMessage('✅ Event added successfully!', 'success');
+          showMessage('Event added successfully!', 'success');
           document.getElementById('addEventForm').reset();
           loadAllEvents();
           loadEventSelectors();
         } else {
-          showMessage('❌ Failed to add event: ' + (result.error || 'Unknown error'), 'error');
+          showMessage('Failed to add event: ' + (result.error || 'Unknown error'), 'error');
         }
       } catch (error) {
         console.error('Error adding event:', error);
-        showMessage('❌ Error adding event. Please try again.', 'error');
+        showMessage('Error adding event. Please try again.', 'error');
       }
     }
 
-    // LOAD EVENT SELECTORS (for update and delete)
+    
     async function loadEventSelectors() {
       try {
         const response = await fetch(`${API_URL}`);
@@ -816,7 +653,7 @@
         if (regData.count > 0) {
           regContainer.innerHTML = `
             <div class="registration-list">
-              <h4>📝 Event Registrations (${regData.count})</h4>
+              <h4>Event Registrations (${regData.count})</h4>
               ${regData.registrations.map(reg => `
                 <div class="registration-item">
                   <strong>${reg.FullName}</strong> (${reg.Email})<br>
@@ -875,16 +712,16 @@
         const result = await response.json();
 
         if (result.success) {
-          showMessage('✅ Event updated successfully!', 'success');
+          showMessage('Event updated successfully!', 'success');
           loadAllEvents();
           loadEventSelectors();
           cancelUpdate();
         } else {
-          showMessage('❌ Failed to update: ' + (result.error || 'Unknown error'), 'error');
+          showMessage('Failed to update: ' + (result.error || 'Unknown error'), 'error');
         }
       } catch (error) {
         console.error('Error updating event:', error);
-        showMessage('❌ Error updating event. Please try again.', 'error');
+        showMessage('Error updating event. Please try again.', 'error');
       }
     }
 
@@ -929,8 +766,8 @@
 
         if (regCount > 0) {
           document.getElementById('deleteRegistrationInfo').innerHTML = `
-            <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radius: 8px; margin-top: 15px;">
-              <strong style="color: #856404;">⚠️ Warning:</strong> This event has ${regCount} registration(s). 
+            <div style="background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radius: 4px; margin-top: 15px;">
+              <strong style="color: #856404;">Warning:</strong> This event has ${regCount} registration(s). 
               It cannot be deleted to maintain data integrity.
             </div>
           `;
@@ -939,8 +776,8 @@
           document.querySelector('#deletePreview .btn-danger').style.cursor = 'not-allowed';
         } else {
           document.getElementById('deleteRegistrationInfo').innerHTML = `
-            <div style="background: #d1ecf1; border: 2px solid #bee5eb; padding: 15px; border-radius: 8px; margin-top: 15px;">
-              <strong style="color: #0c5460;">✓ Safe to delete:</strong> No registrations found for this event.
+            <div style="background: #d1ecf1; border: 2px solid #bee5eb; padding: 15px; border-radius: 4px; margin-top: 15px;">
+              <strong style="color: #0c5460;">Safe to delete:</strong> No registrations found for this event.
             </div>
           `;
           document.querySelector('#deletePreview .btn-danger').disabled = false;
@@ -972,16 +809,16 @@
         const result = await response.json();
 
         if (result.success) {
-          showMessage('✅ Event deleted successfully!', 'success');
+          showMessage('Event deleted successfully!', 'success');
           loadAllEvents();
           loadEventSelectors();
           cancelDelete();
         } else {
-          showMessage('❌ Failed to delete: ' + (result.error || 'Unknown error'), 'error');
+          showMessage('Failed to delete: ' + (result.error || 'Unknown error'), 'error');
         }
       } catch (error) {
         console.error('Error deleting event:', error);
-        showMessage('❌ Error deleting event. Please try again.', 'error');
+        showMessage('Error deleting event. Please try again.', 'error');
       }
     }
 
@@ -1005,15 +842,15 @@
         const result = await response.json();
 
         if (result.success) {
-          showMessage('✅ Event deleted successfully!', 'success');
+          showMessage('Event deleted successfully!', 'success');
           loadAllEvents();
           loadEventSelectors();
         } else {
-          showMessage('❌ ' + (result.error || 'Failed to delete event'), 'error');
+          showMessage(result.error || 'Failed to delete event', 'error');
         }
       } catch (error) {
         console.error('Error deleting event:', error);
-        showMessage('❌ Error deleting event. Please try again.', 'error');
+        showMessage('Error deleting event. Please try again.', 'error');
       }
     }
 

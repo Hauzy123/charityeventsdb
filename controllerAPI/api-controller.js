@@ -9,11 +9,63 @@ connection.connect(err => {
 });
 
 router.get("/", (req, res) => {
-  const query = "SELECT * FROM CharityEvents WHERE EventDate >= CURDATE() ORDER BY EventDate ASC";
+  const query = "SELECT * FROM CharityEvents ORDER BY EventDate ASC";
   connection.query(query, (err, results) => {
     if (err) return res.status(500).json({ error: "Failed to retrieve events." });
     res.json(results);
   });
+});
+
+
+router.post("/", async (req, res) => {
+  try {
+    const eventData = req.body;
+ 
+    const required = ['EventName', 'EventType', 'EventDate', 'StartTime', 'VenueName', 'OrganizerName', 'ContactEmail'];
+    for (const field of required) {
+      if (!eventData[field]) {
+        return res.status(400).json({ success: false, error: `${field} is required` });
+      }
+    }
+
+    const query = `
+      INSERT INTO CharityEvents 
+      (EventName, EventType, Description, EventDate, StartTime, EndTime, VenueName, Address, 
+       OrganizerName, ContactEmail, WebsiteURL, RegistrationLink, TicketPrice)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const values = [
+      eventData.EventName,
+      eventData.EventType,
+      eventData.Description || null,
+      eventData.EventDate,
+      eventData.StartTime,
+      eventData.EndTime || null,
+      eventData.VenueName,
+      eventData.Address || null,
+      eventData.OrganizerName,
+      eventData.ContactEmail,
+      eventData.WebsiteURL || null,
+      eventData.RegistrationLink || null,
+      eventData.TicketPrice || 0.00
+    ];
+
+    connection.query(query, values, (err, result) => {
+      if (err) {
+        console.error('Error creating event:', err);
+        return res.status(500).json({ success: false, error: "Failed to create event" });
+      }
+      res.status(201).json({ 
+        success: true, 
+        message: "Event created successfully",
+        eventId: result.insertId 
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: "Internal server error" });
+  }
 });
 
 router.get("/search", (req, res) => {
