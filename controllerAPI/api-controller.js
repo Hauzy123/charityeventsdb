@@ -8,6 +8,7 @@ connection.connect(err => {
   if (err) console.error(err);
 });
 
+//events from home page
 router.get("/", (req, res) => {
   const query = "SELECT * FROM CharityEvents ORDER BY EventDate ASC";
   connection.query(query, (err, results) => {
@@ -16,7 +17,7 @@ router.get("/", (req, res) => {
   });
 });
 
-
+//update from admin
 router.post("/", async (req, res) => {
   try {
     const eventData = req.body;
@@ -68,6 +69,7 @@ router.post("/", async (req, res) => {
   }
 });
 
+//search page
 router.get("/search", (req, res) => {
   const { date, venue, type } = req.query;
   let query = "SELECT * FROM CharityEvents WHERE 1=1";
@@ -90,6 +92,7 @@ router.get("/search", (req, res) => {
   });
 });
 
+//search bar
 router.get("/categories/list", (req, res) => {
   const query = "SELECT DISTINCT EventType FROM CharityEvents";
   connection.query(query, (err, results) => {
@@ -107,6 +110,7 @@ router.get("/:id", (req, res) => {
   });
 });
 
+//updates existing events
 router.put("/:id", async (req, res) => {
   try {
     const eventId = parseInt(req.params.id);
@@ -122,7 +126,7 @@ router.put("/:id", async (req, res) => {
     res.status(500).json({ success: false, error: "Internal server error" });
   }
 });
-
+//deletes existing events
 router.delete("/:id", async (req, res) => {
   try {
     const eventId = parseInt(req.params.id);
@@ -139,6 +143,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+//gets registration for each event
 router.get("/:id/registrations", async (req, res) => {
   try {
     const eventId = parseInt(req.params.id);
@@ -151,7 +156,7 @@ router.get("/:id/registrations", async (req, res) => {
   }
 });
 
-// POST - Register user for an event
+// Register user for an event
 router.post("/:id/register", async (req, res) => {
   try {
     const eventId = parseInt(req.params.id);
@@ -167,7 +172,7 @@ router.post("/:id/register", async (req, res) => {
       ticketsPurchased: req.body.ticketsPurchased || 1
     };
 
-    // Basic validation
+    //  validation
     if (!registrationData.fullName || !registrationData.email) {
       return res.status(400).json({ success: false, error: "Full name and email are required" });
     }

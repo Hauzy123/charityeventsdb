@@ -124,3 +124,16 @@ UNION ALL
 SELECT 'Total Users:', COUNT(*) FROM Users
 UNION ALL
 SELECT 'Total Registrations:', COUNT(*) FROM EventRegistrations;
+
+DROP TABLE IF EXISTS EventRegistrations; 
+CREATE TABLE EventRegistrations ( RegistrationID INT PRIMARY KEY AUTO_INCREMENT, 
+EventID INT NOT NULL, FullName VARCHAR(255) NOT NULL, Email VARCHAR(255) NOT NULL, 
+PhoneNumber VARCHAR(50), Age INT, Gender VARCHAR(50), TicketsPurchased INT DEFAULT 1 CHECK (TicketsPurchased > 0), 
+RegistrationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP, CONSTRAINT fk_event FOREIGN KEY (EventID) REFERENCES CharityEvents(EventID) ON DELETE CASCADE, 
+UNIQUE KEY unique_user_event (EventID, Email) );
+
+INSERT INTO EventRegistrations (EventID, FullName, Email, PhoneNumber, Age, Gender, TicketsPurchased) 
+VALUES 
+(1, 'John Doe', 'johndoe@gmail.com', '71234567', 28, 'Male', 1), 
+(1, 'Mary Kila', 'mary.kila@yahoo.com', '76543210', 34, 'Female', 1), 
+(1, 'Sarah Johnson', 'sarah.j@example.com', '75678901', 25, 'Female', 2);

@@ -6,7 +6,7 @@ const eventAPI = require("./controllerAPI/api-controller");
 
 const app = express();
 
-// Logging middleware
+
 app.use((req, res, next) => {
   console.log(`\n📥 ${req.method} ${req.url}`);
   console.log('Headers:', req.headers);
